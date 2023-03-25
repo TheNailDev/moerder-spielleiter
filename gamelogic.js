@@ -385,7 +385,7 @@ function SpielReset()
 					}
 				},
 				});
-	NeueRolle({name:"Werwölfe",strid:"werwolf",
+	NeueRolle({name:"Mörder / Werwölfe",strid:"werwolf",
 				balance:-6,
 				istboese:true,
 				einzelrolle:false,
@@ -397,7 +397,7 @@ function SpielReset()
 						{
 							case 0:
 								cschritt++;
-								Anzeige_Auswahl("<q>Alle <b>Werwölfe erwachen und erkennen sich gegenseitig</b>. Ihre Mission ist es, alle Dorfbewohner zu reißen, um siegreich aus dem Spiel hervorzugehen.</q>",function(spieler){return HatKeineRolle(spieler);});
+								Anzeige_Auswahl("<q>Alle <b>Mörder / Werwölfe erwachen und erkennen sich gegenseitig</b>. Ihre Mission ist es, alle Dorfbewohner zu töten, um siegreich aus dem Spiel hervorzugehen.</q> <b>(Mörder / Werwölfe erfassen)</b>",function(spieler){return HatKeineRolle(spieler);});
 								break;
 							case 1:
 								if (Check_Auswahl(0,-1,true))
@@ -424,7 +424,7 @@ function SpielReset()
 						{
 							case 0:
 								cschritt++;
-								Anzeige_Auswahl("<q>Mitten in der Nacht gehen die Werwölfe auf die Jagd.</q><q>Sie einigen sich auf ihr <b>nächstes Opfer</b>...</q>",function(spieler){if (spieler.lebt) {return true;} else return false;});
+								Anzeige_Auswahl("<q>Mitten in der Nacht gehen die Mörder / Werwölfe auf die Jagd.</q><q>Sie einigen sich auf ihr <b>nächstes Opfer</b>...</q>",function(spieler){if (spieler.lebt) {return true;} else return false;});
 								break;
 							case 1:
 								if (Check_Auswahl(0,1,true))
@@ -440,7 +440,7 @@ function SpielReset()
 								break;
 							case 2:
 								cschritt++;
-								Anzeige_Notiz("<q>Die Werwölfe haben ihre Wahl getroffen und schlafen wieder ein.</q>");
+								Anzeige_Notiz("<q>Die Mörder / Werwölfe haben ihre Wahl getroffen und schlafen wieder ein.</q>");
 								break;
 							case 3:
 								RolleEnde();
@@ -449,7 +449,7 @@ function SpielReset()
 					}
 				},
 				});
-	NeueRolle({name:"Nachtwächter / Priester",strid:"leibwaechter",
+	NeueRolle({name:"Krankenschwester / Nachtwächter / Priester",strid:"leibwaechter",
 				balance:+3,
 				funktion_nacht:function()
 				{
@@ -461,7 +461,7 @@ function SpielReset()
 								cschritt++;
 								rollen[crolle].werte.ziel = -1;
 								rollen[crolle].werte.letztes_ziel = -1;
-								Anzeige_Auswahl("<q>Der <b>Nachtwächter / Priester</b> kann jede Nacht einen anderen zu beschützenden Spieler wählen, welcher dann in dieser Nacht durch nichts getötet oder verletzt werden kann.</q> <b>(Nachtwächter / Priester erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+								Anzeige_Auswahl("<q>Die / Der <b>Krankenschwester / Nachtwächter / Priester</b> kann jede Nacht einen anderen zu beschützenden Spieler wählen, welcher dann in dieser Nacht durch nichts getötet oder verletzt werden kann.</q> <b>(Krankenschwester / Nachtwächter / Priester erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
 								break;
 							case 1:
 								if (Check_Auswahl(0,1,false))
@@ -488,7 +488,7 @@ function SpielReset()
 						{
 							case 0:
 								cschritt++;
-								var rollentext = "<q>Der Nachtwächter / Priester erwacht. <b>Wen</b> möchte er in dieser Nacht beschützen? (nicht zweimal hintereinander dieselbe Person, Eigenwahl "+(einstellungen["leibwaechter_eigenwahl"].wert?"erlaubt":"verboten")+")</q>";
+								var rollentext = "<q>Die / Der Krankenschwester / Nachtwächter / Priester erwacht. <b>Wen</b> möchte sie / er in dieser Nacht beschützen? (nicht zweimal hintereinander dieselbe Person, Eigenwahl "+(einstellungen["leibwaechter_eigenwahl"].wert?"erlaubt":"verboten")+")</q>";
 								AuswahlReset();
 								if (IstRolleInaktiv(crolle))
 								{
@@ -504,7 +504,7 @@ function SpielReset()
 								if (Check_Auswahl(0,1,!IstRolleInaktiv(crolle)))
 								{
 									rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
-									Anzeige_Notiz("<q>Der Nachtwächter / Priester hat seine Wahl getroffen und schläft wieder ein.</q>");
+									Anzeige_Notiz("<q>Die / Der Krankenschwester / Nachtwächter / Priester hat seine Wahl getroffen und schläft wieder ein.</q>");
 									cschritt++;
 								}
 								break;
@@ -765,7 +765,7 @@ function SpielReset()
 					}
 				},
 				});
-	NeueRolle({name:"Seher",strid:"seher",
+	NeueRolle({name:"Detektiv / Seher",strid:"seher",
 				balance:+7,
 				funktion_nacht:function()
 				{
@@ -775,7 +775,7 @@ function SpielReset()
 						{
 							case 0:
 								cschritt++;
-								Anzeige_Auswahl("<q>Der <b>Seher</b> kann seine Kristallkugel (den Spielleiter) jede Nacht zu einem Spieler befragen und erfährt, ob dieser ein Werwolf ist.</q> <b>(Seher erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+								Anzeige_Auswahl("<q>Der <b>Detektiv / Seher</b> kann jede Nacht die Identität eines Spielers untersuchen und erfährt (vom Spielleiter), ob dieser ein Werwolf ist.</q> <b>(Detektiv / Seher erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
 								rollen[crolle].werte.ziel = -1;
 								break;
 							case 1:
@@ -803,7 +803,7 @@ function SpielReset()
 						{
 							case 0:
 								cschritt++;
-								var rollentext = "<q>Der Seher erwacht. <b>Über wen</b> möchte er seine Kugel befragen?</q>";
+								var rollentext = "<q>Der Detektiv / Seher erwacht. <b>Wessen</b> Identität möchte er untersuchen?</q>";
 								AuswahlReset();
 								if (IstRolleInaktiv(crolle))
 								{
@@ -822,13 +822,13 @@ function SpielReset()
 									rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
 									if (rollen[crolle].werte.ziel!=-1)
 									{
-										antwort = (((leute[rollen[crolle].werte.ziel].rolle==rids["werwolf"]) || ((leute[rollen[crolle].werte.ziel].rolle==rids["verfluchter"]) && (rollen[rids["verfluchter"]].werte.istwolf )))?"Ist Werwolf!":"Kein Werwolf.");
+										antwort = (((leute[rollen[crolle].werte.ziel].rolle==rids["werwolf"]) || ((leute[rollen[crolle].werte.ziel].rolle==rids["verfluchter"]) && (rollen[rids["verfluchter"]].werte.istwolf )))?"JA!":"NEIN.");
 									}
 									else
 									{
 										antwort = "(keine Antwort)";
 									}
-									Anzeige_Notiz("<q>Der Seher erfährt, ob sein Ziel ein Werwolf ist...</q>"+antwort+"<q>...und schläft wieder ein.</q>");
+									Anzeige_Notiz("<q>Der Detektiv / Seher erfährt, ob sein Ziel ein Mörder / Werwolf ist...</q>"+antwort+"<q>...und schläft wieder ein.</q>");
 									cschritt++;
 								}
 								break;
@@ -1792,7 +1792,7 @@ function Button_Fortsetzen(button)
 function Aktion_KartenZufallsliste()
 {
 	kartenliste = new Array();
-	while (!contains(kartenliste,"Werwölfe")) //falls der Zufall alle Werwölfe rauskickt
+	while (!contains(kartenliste,"Mörder / Werwölfe")) //falls der Zufall alle Werwölfe rauskickt
 	{
 		kartenliste = new Array();
 		var klist = new Array();
