@@ -268,9 +268,9 @@ function SpielReset()
 	*/
 	
 	/* Rollendefinitionen */
-	//Eingebaut (in Reihenfolge): Amor, Günstling, Werwölfe, Nachtwächter / Priester, Alte Vettel, Hexe, Verfluchter, Seher, Prinz, Harter Bursche, Dorfbewohner
+	//Eingebaut (in Reihenfolge): Jäger, Attentäter, Amor, Günstling, Mörder / Werwölfe, Krankenschwester / Nachtwächter / Priester, Alte Vettel, Hexe, Verfluchter, Detektiv / Seher, Prinz, Harter Bursche, Dorfbewohner
 	NeueRolle({
-		name:"Jäger", strid:"jaeger",
+		name:"Jäger", strid:"jaeger", balance:-2,
 		funktion_nacht:function()
 		{
 			if (!rollen[crolle].notiert)
@@ -280,6 +280,36 @@ function SpielReset()
 					case 0:
 						cschritt++;
 						Anzeige_Auswahl("<q>Wenn der <b>Jäger</b> stirbt, darf dieser als letzte Aktion einen anderen Mitspieler erschießen.</q> <b>(Jäger erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
+	
+	NeueRolle({
+		name:"Attentäter", strid:"bomber", balance:-4,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Wenn der <b>Attentäter</b> stirbt, zündet er eine Bombe und die Mitspieler links und rechts von Ihm sterben ebenfalls.</q> <b>(Attentäter erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
 						break;
 					case 1:
 						if (Check_Auswahl(0,1,false))
@@ -1119,6 +1149,11 @@ function SpielReset()
 						tag_zusatzmorde++;
 						report.push(leute[id].name + " war Jäger und erschießt eine weitere Person.")
 					}
+					if (leute[id].rolle == rids["bomber"])
+					{
+						tag_zusatzmorde += 2;
+						report.push(leute[id].name + " war Attentäter und zündet seine Bombe.")
+					}
 				}
 				
 				if (tag_zusatzmorde > 0)
@@ -1170,6 +1205,11 @@ function SpielReset()
 							tag_zusatzmorde++;
 							report.push(leute[id].name + " war Jäger und erschießt eine weitere Person.")
 						}
+						if (leute[id].rolle == rids["bomber"])
+						{
+							tag_zusatzmorde += 2;
+							report.push(leute[id].name + " war Attentäter und zündet seine Bombe.")
+						}
 					}
 					
 					if (tag_zusatzmorde > 0)
@@ -1214,6 +1254,11 @@ function SpielReset()
 							{
 								tag_zusatzmorde++;
 								nachricht += leute[ziel].name + " war Jäger und erschießt eine weitere Person."
+							}
+							if (leute[ziel].rolle == rids["bomber"])
+							{
+								tag_zusatzmorde += 2;
+								report.push(leute[ziel].name + " war Attentäter und zündet seine Bombe.")
 							}
 							if (tag_zusatzmorde > 0)
 							{
@@ -1271,13 +1316,18 @@ function SpielReset()
 							tag_zusatzmorde++;
 							report.push(leute[id].name + " war Jäger und erschießt eine weitere Person.")
 						}
+						if (leute[id].rolle == rids["bomber"])
+						{
+							tag_zusatzmorde += 2;
+							report.push(leute[id].name + " war Attentäter und zündet seine Bombe.")
+						}
 					}
 					
 					if (tag_zusatzmorde > 0)
 					{
 						var nachricht = '<q>'+report.join(" ")+'</q><b>(Wähle weitere Tote durch Reaktionen aus.)</b>';
 						Anzeige_Auswahl(nachricht, function(spieler){return (spieler.lebt && spieler.waehlbar);});
-						cschritt = 50; // Schritt für Zusatztode
+						cschritt = 51; // Schritt für Zusatztode
 					}
 					else
 					{
