@@ -268,7 +268,60 @@ function SpielReset()
 	*/
 	
 	/* Rollendefinitionen */
-	//Eingebaut (in Reihenfolge): Jäger, Attentäter, Amor, Günstling, Mörder / Werwölfe, Krankenschwester / Nachtwächter / Priester, Alte Vettel, Hexe, Verfluchter, Detektiv / Seher, Prinz, Harter Bursche, Dorfbewohner
+	//Eingebaut (in Reihenfolge): Suizidgefährdeter / Narr, Jäger, Attentäter, Amor, Günstling, Mörder / Werwölfe, Krankenschwester / Nachtwächter / Priester, Alte Vettel, Hexe, Verfluchter, Detektiv / Seher, Prinz, Harter Bursche, Dorfbewohner
+	NeueRolle({
+		name:"Suizidgefährdeter / Narr", strid:"narr",
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Der <b>Suizidgefährdete / Narr</b> möchte um jeden Preis sterben. Wenn er stirbt hat er gewonnen und das Spiel ist vorbei. Alle anderen Spieler haben dann verloren. Dies gilt nicht, wenn er von Armor mit einem anderen Spieler verliebt wurde. Dann ist sein Ziel das überleben mit seinem Partner und das Spiel geht nach seinem Tod normal weiter.</q> <b>(Suizidgefähredten / Narr erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
+	
+	IstNarrimSpiel = function()
+	{
+		// Diese Funktion gibt true zurück, wenn der Narr im Spiel ist und nicht verliebt ist.
+		// In diesem Fall ist das Spiel vorbei, sobald der Narr stirbt.
+		if (rollen[rids["narr"]].spieler.length < 1)
+		{
+			return false;
+		}
+		if ((rollen[rids["amor"]].anzahl>0) && (rollen[rids["amor"]].werte.verliebte.length==2))
+		{	
+			var verliebter = -1;
+			if (rollen[rids["narr"]].spieler[0] == rollen[rids["amor"]].werte.verliebte[0])
+			{
+				return false;
+			}
+			else if (rollen[rids["narr"]].spieler[0] == rollen[rids["amor"]].werte.verliebte[1])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	NeueRolle({
 		name:"Jäger", strid:"jaeger", balance:-2,
 		funktion_nacht:function()
@@ -468,9 +521,32 @@ function SpielReset()
 										rollen[crolle].spieler = auswahl;
 										RollenUebertragen(crolle);
 									}
-									cschritt = 0;
-									rollen[crolle].notiert = true;
+									
+									if (rollen[rids["narr"]].imspiel)
+									{
+										var notiz = "<q>Die Mörder / Werwölfe erfahren nun, wer der Suizidgefährdete / Narr ist. Um zu gewinnen, dürft ihr ihn nicht umbringen.</q>";
+										if (IstNarrimSpiel())
+										{
+											notiz += "<b>(Symbolisiere den Mördern / Werwöfen, dass " + leute[rollen[rids["narr"]].spieler[0]].name + " der Suizidgefährdete / Narr ist)</b>";
+											
+										}
+										else
+										{
+											notiz += "<b>(Symbolisiere den Mördern / Werwölfen, dass es keinen Suizidgefährdeten / Narr gibt)</b>"
+										}
+										Anzeige_Notiz(notiz);
+										cschritt++;
+									}
+									else
+									{
+										rollen[crolle].notiert = true;
+										cschritt = 0;
+									}
 								}
+								break
+							case 2:
+								rollen[crolle].notiert = true;
+								cschritt = 0;
 								break;
 						}
 					}
@@ -1593,6 +1669,14 @@ function Check_Auswahl(min, max, nullwarnung)
 }
 function Check_Sieg()
 {
+	if (IstNarrimSpiel())
+	{
+		if (!leute[rollen[rids["narr"]].spieler[0]].lebt)
+		{
+			Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Der Suizifgefährdete / Narr gewinnt</div>');
+			return true;
+		}
+	}
 	var gute = 0;
 	var boese = 0;
 	for (var i in leute)
@@ -1603,7 +1687,7 @@ function Check_Sieg()
 			{
 				boese++;
 			}
-			else
+			else if (leute[i].rolle != rids["narr"])
 			{
 				gute++;
 			}
@@ -1611,7 +1695,7 @@ function Check_Sieg()
 	}
 	if (gute == 0)
 	{
-		Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Werwölfe gewinnen</div>');
+		Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Mörder / Werwölfe gewinnen</div>');
 		return true;
 	}
 	if (boese == 0)
