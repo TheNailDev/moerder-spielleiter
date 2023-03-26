@@ -11,6 +11,7 @@ var spieleranzahl, rollenanzahl, tagzahl, nachtzahl;
 var leutesammler, auswahl, entscheidung;
 var cphase, crolle, cschritt;
 var Tagesaktionen, SpielerToeten, TagLynchen; //TagLynchen scheint eine Karteileiche zu sein :/
+var tag_zusatzmorde;
 
 window.addEventListener('load', function(e) {
 	document.getElementById('vinfo').innerHTML = version;
@@ -268,6 +269,36 @@ function SpielReset()
 	
 	/* Rollendefinitionen */
 	//Eingebaut (in Reihenfolge): Amor, Günstling, Werwölfe, Nachtwächter / Priester, Alte Vettel, Hexe, Verfluchter, Seher, Prinz, Harter Bursche, Dorfbewohner
+	NeueRolle({
+		name:"Jäger", strid:"jaeger",
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Wenn der <b>Jäger</b> stirbt, darf dieser als letzte Aktion einen anderen Mitspieler erschießen.</q> <b>(Jäger erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
+	
 	NeueRolle({name:"Amor",strid:"amor",
 				balance:-3,
 				funktion_nacht:function()
@@ -935,7 +966,7 @@ function SpielReset()
 			feedback.ausgabe += "<q>Im letzten Moment erkennt das Dorf den Prinzen und rettet ihn vor dem Galgentod.</q>";
 			return feedback;
 		}
-		if ((rollen[rids["leibwaechter"]].anzahl>0) && (ziel==rollen[rids["leibwaechter"]].werte.ziel) && (ursprung!="galgen"))
+		if ((rollen[rids["leibwaechter"]].anzahl>0) && (ziel==rollen[rids["leibwaechter"]].werte.ziel) && (ursprung!="galgen") && (ursprung!="todes_reaktion") && (ursprung!="liebe"))
 		{
 			feedback.erfolg = false;
 			return feedback;
@@ -1080,9 +1111,81 @@ function SpielReset()
 						break;
 				}
 				
-				//ANZEIGE
-				Anzeige_Notiz('<q>'+report.join(" ")+'</q>');
-				Anzeige_Zusatz(zusatztext+'<b>(Diskussionsphase)</b>');
+				tag_zusatzmorde = 0;
+				for (var id of gestorben_ids)
+				{
+					if (leute[id].rolle == rids["jaeger"])
+					{
+						tag_zusatzmorde++;
+						report.push(leute[id].name + " war Jäger und erschießt eine weitere Person.")
+					}
+				}
+				
+				if (tag_zusatzmorde > 0)
+				{
+					var nachricht = '<q>'+report.join(" ")+'</q><b>(Wähle weitere Tote durch Reaktionen aus.)</b>';
+					Anzeige_Auswahl(nachricht, function(spieler){return (spieler.lebt && spieler.waehlbar);});
+					cschritt = 50; // Schritt für Zusatztode
+				}
+				else
+				{
+					//ANZEIGE
+					Anzeige_Notiz('<q>'+report.join(" ")+'</q>');
+					Anzeige_Zusatz(zusatztext+'<b>(Diskussionsphase)</b>');
+				}
+				break;
+			case 50:
+				if (Check_Auswahl(0, tag_zusatzmorde, true))
+				{
+					var gestorben_namen = new Array();
+					var gestorben_ids = new Array();
+					var zusatztext = "";
+					for (ziel of auswahl)
+					{
+						var feedback = SpielerToeten(ziel, "todes_reaktion");
+						if (feedback.erfolg)
+						{
+							zusatztext += feedback.ausgabe;
+							gestorben_namen.push(leute[ziel].name);
+							gestorben_ids.push(leute[ziel].spielerID);
+						}
+					}
+					switch (gestorben_ids.length)
+					{
+						case 0:
+							report.push("Es ist niemand gestorben.");
+							break;
+						case 1:
+							report.push(gestorben_namen[0]+" ist gestorben.");
+							break;
+						default:
+							report.push("Gestorben sind: "+gestorben_namen.join(", ")+".");
+							break;
+					}
+					tag_zusatzmorde = 0;
+					for (var id of gestorben_ids)
+					{
+						if (leute[id].rolle == rids["jaeger"])
+						{
+							tag_zusatzmorde++;
+							report.push(leute[id].name + " war Jäger und erschießt eine weitere Person.")
+						}
+					}
+					
+					if (tag_zusatzmorde > 0)
+					{
+						var nachricht = '<q>'+report.join(" ")+'</q><b>(Wähle weitere Tote durch Reaktionen aus.)</b>';
+						Anzeige_Auswahl(nachricht, function(spieler){return (spieler.lebt && spieler.waehlbar);});
+						cschritt = 50; // Schritt für Zusatztode
+					}
+					else
+					{
+						//ANZEIGE
+						Anzeige_Notiz('<q>'+report.join(" ")+'</q>');
+						Anzeige_Zusatz(zusatztext+'<b>(Diskussionsphase)</b>');
+						cschritt = 1;
+					}
+				}
 				break;
 			case 1:
 				cschritt++;
@@ -1093,7 +1196,7 @@ function SpielReset()
 				if (Check_Auswahl(0,1,true))
 				{
 					cschritt++;
-					cschritt+=2; //deaktiviert Noch-jmd-lynchen-Frage
+					//cschritt+=2; //deaktiviert Noch-jmd-lynchen-Frage
 					if (auswahl.length==0)
 					{
 						Anzeige_Notiz("<q>Niemand wurde gelyncht.</q>");
@@ -1105,13 +1208,82 @@ function SpielReset()
 						var feedback = SpielerToeten(ziel, "galgen");
 						if (feedback.erfolg)
 						{
-							Anzeige_Notiz('<q>'+leute[ziel].name+" wurde gelyncht.</q>");
-							Anzeige_Zusatz(feedback.ausgabe);
+							var nachricht = '<q>'+leute[ziel].name+" wurde gelyncht.</q>"
+							tag_zusatzmorde = 0;
+							if (leute[ziel].rolle == rids["jaeger"])
+							{
+								tag_zusatzmorde++;
+								nachricht += leute[ziel].name + " war Jäger und erschießt eine weitere Person."
+							}
+							if (tag_zusatzmorde > 0)
+							{
+								nachricht += '<b>(Wähle weitere Tote durch Reaktionen aus.)</b>';
+								Anzeige_Auswahl(nachricht, function(spieler){return (spieler.lebt && spieler.waehlbar);});
+								Anzeige_Zusatz(feedback.ausgabe);
+								cschritt = 51; // Schritt für Zusatztode
+							}
+							else
+							{
+								Anzeige_Notiz(nachricht);
+								Anzeige_Zusatz(feedback.ausgabe);
+							}
 						}
 						else
 						{
 							Anzeige_Notiz(feedback.ausgabe);
 						}
+					}
+				}
+				break;
+			case 51:
+				if (Check_Auswahl(0, tag_zusatzmorde, true))
+				{
+					var gestorben_namen = new Array();
+					var gestorben_ids = new Array();
+					var zusatztext = "";
+					for (ziel of auswahl)
+					{
+						var feedback = SpielerToeten(ziel, "todes_reaktion");
+						if (feedback.erfolg)
+						{
+							zusatztext += feedback.ausgabe;
+							gestorben_namen.push(leute[ziel].name);
+							gestorben_ids.push(leute[ziel].spielerID);
+						}
+					}
+					switch (gestorben_ids.length)
+					{
+						case 0:
+							report.push("Es ist niemand gestorben.");
+							break;
+						case 1:
+							report.push(gestorben_namen[0]+" ist gestorben.");
+							break;
+						default:
+							report.push("Gestorben sind: "+gestorben_namen.join(", ")+".");
+							break;
+					}
+					tag_zusatzmorde = 0;
+					for (var id of gestorben_ids)
+					{
+						if (leute[id].rolle == rids["jaeger"])
+						{
+							tag_zusatzmorde++;
+							report.push(leute[id].name + " war Jäger und erschießt eine weitere Person.")
+						}
+					}
+					
+					if (tag_zusatzmorde > 0)
+					{
+						var nachricht = '<q>'+report.join(" ")+'</q><b>(Wähle weitere Tote durch Reaktionen aus.)</b>';
+						Anzeige_Auswahl(nachricht, function(spieler){return (spieler.lebt && spieler.waehlbar);});
+						cschritt = 50; // Schritt für Zusatztode
+					}
+					else
+					{
+						//ANZEIGE
+						Anzeige_Notiz('<q>'+report.join(" ")+'</q>');
+						cschritt = 3;
 					}
 				}
 				break;
