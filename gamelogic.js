@@ -456,6 +456,37 @@ function SpielReset()
 					}
 				},
 				});
+	
+	NeueRolle({
+		name:"Metzger / Haariger", strid:"metzger", balance:-1,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Der <b>Metzger / Haarige</b> ist ein normaler Bürger / Dorfbewohner. Jedoch hält der Detektiv / Seher ihn für einen Mörder / Werwolf.</q> <b>(Metzger / Haarigen erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
+	
 	NeueRolle({name:"Günstling",strid:"guenstling",
 				balance:-6,
 				istboese:true,
@@ -959,7 +990,7 @@ function SpielReset()
 									rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
 									if (rollen[crolle].werte.ziel!=-1)
 									{
-										antwort = (((leute[rollen[crolle].werte.ziel].rolle==rids["werwolf"]) || ((leute[rollen[crolle].werte.ziel].rolle==rids["verfluchter"]) && (rollen[rids["verfluchter"]].werte.istwolf )))?"JA!":"NEIN.");
+										antwort = (((leute[rollen[crolle].werte.ziel].rolle==rids["werwolf"]) || ((leute[rollen[crolle].werte.ziel].rolle==rids["verfluchter"]) && (rollen[rids["verfluchter"]].werte.istwolf )) || (leute[rollen[crolle].werte.ziel].rolle==rids["metzger"]) )?"JA!":"NEIN.");
 									}
 									else
 									{
