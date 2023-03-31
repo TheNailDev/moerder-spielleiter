@@ -617,6 +617,73 @@ function SpielReset()
 					}
 				},
 				});
+	
+	NeueRolle({
+			name:"Waisenkind / Prostituierte", strid:"waise",
+			funktion_nacht: function()
+			{
+				if (!rollen[crolle].notiert)
+				{
+					switch (cschritt)
+					{
+						case 0:
+							cschritt++;
+							rollen[crolle].werte.ziel = -1;
+							Anzeige_Auswahl("<q>Das / Die <b>Wasienkind / Prostituierte</b> sucht sich jede Nacht eine Person aus, bei dem es / sie schlafen kann. Ist die ausgewählte Person ein Mörder / Werwolf, oder das Opfer dieser so stirbt auch das Waisenkind / die Prostituierte</q> <b>(Waisenkind / Prostituierte erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+							break;
+						case 1:
+							if (Check_Auswahl(0,1,false))
+							{
+								if (auswahl.length > 0)
+								{
+									rollen[crolle].spieler = auswahl;
+									RollenUebertragen(crolle);
+								}
+								cschritt = 0;
+								rollen[crolle].notiert = true;
+							}
+							break;
+					}
+				}
+				if (rollen[crolle].notiert)
+				{
+					if (!IstRolleAufzurufen(crolle))
+					{
+						rollen[crolle].werte.ziel = -1;
+						cschritt = 2;
+					}
+					switch (cschritt)
+					{
+						case 0:
+							cschritt++;
+							var rollentext = "<q>Das Waisenkind / Die Prostituierte erwacht. Bei <b>Wem</b> möchte es / sie in dieser Nacht schlafen?</q>";
+							AuswahlReset();
+							if (IstRolleInaktiv(crolle))
+							{
+								Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
+								rollen[crolle].werte.ziel = -1;
+							}
+							else
+							{
+								Anzeige_Auswahl(rollentext,function(spieler){return (spieler.lebt && spieler.rolle!=rids["waise"]); });
+							}
+							break;
+						case 1:
+							if (Check_Auswahl(0,1,!IstRolleInaktiv(crolle)))
+							{
+								rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
+								Anzeige_Notiz("<q>Das Waisenkind / Die Prostituierte hat seine / ihre Wahl getroffen und schläft wieder ein.</q>");
+								cschritt++;
+							}
+							break;
+						case 2:
+							RolleEnde();
+							break;
+					}
+				}
+			}
+		});
+	
 	NeueRolle({name:"Krankenschwester / Nachtwächter / Priester",strid:"leibwaechter",
 				balance:+3,
 				funktion_nacht:function()
@@ -1149,6 +1216,13 @@ function SpielReset()
 									:"Er hatte eine "+(rollen[leute[ziel].rolle].istboese?"böse":"gute")+" Rolle."
 								)+"</q>";
 		}
+		
+		if (ursprung=="waise")
+		{
+			rollen[leute[ziel].rolle].bekannt++;
+			feedback.ausgabe += "<q>"+leute[ziel].name+" hat diese Nacht bei einer ungünstigen Person geschlafen und ist deswegen leider gestorben.</q>";
+			
+		}
 
 		//TODESREAKTIONEN
 		//Amor & Verliebte
@@ -1167,6 +1241,22 @@ function SpielReset()
 			{
 				var vtext = SpielerToeten(verliebter, "liebe");
 				feedback.ausgabe += vtext.ausgabe;
+			}
+		}
+		
+		//Waisenkind / Prostituierte
+		if (contains(["werwolf", "hexe"],ursprung))
+		{
+			if (rollen[rids["waise"]].anzahl > 0)
+			{
+				if (ziel == rollen[rids["waise"]].werte.ziel)
+				{
+					if ( leute[rollen[rids["waise"]].spieler[0]].lebt )
+					{
+						var vtext = SpielerToeten(rollen[rids["waise"]].spieler, "waise");
+						feedback.ausgabe += vtext.ausgabe;
+					}
+				}
 			}
 		}
 		
@@ -1220,6 +1310,21 @@ function SpielReset()
 						zusatztext += feedback.ausgabe;
 						gestorben_namen.push(leute[ziel].name);
 						gestorben_ids.push(leute[ziel].spielerID);
+					}
+				}
+				//Waisenkind hat bei Werwolf geschlafen
+				if (rollen[rids["waise"]].anzahl>0 && rollen[rids["waise"]].werte.ziel>=0)
+				{
+					if (leute[rollen[rids["waise"]].werte.ziel].rolle == rids["werwolf"])
+					{
+						var ziel = rollen[rids["waise"]].spieler[0];
+						var feedback = SpielerToeten(ziel, "waise");
+						if (feedback.erfolg)
+						{
+							zusatztext += feedback.ausgabe;
+							gestorben_namen.push(leute[ziel].name);
+							gestorben_ids.push(leute[ziel].spielerID);
+						}
 					}
 				}
 				//Alte Vettel
