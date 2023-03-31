@@ -456,6 +456,37 @@ function SpielReset()
 					}
 				},
 				});
+				
+	NeueRolle({
+		name:"Überlebenskünstler", strid:"survivor", balance:+1,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						rollen[crolle].werte.angegriffen = false;
+						Anzeige_Auswahl("<q>Der <b>Überlebenskünstler</b> überlebt Nachts den einmalig einen Mordversuch.</q> <b>(Überlebenskünstler erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
 	
 	NeueRolle({
 		name:"Metzger / Haariger", strid:"metzger", balance:-1,
@@ -629,7 +660,7 @@ function SpielReset()
 						case 0:
 							cschritt++;
 							rollen[crolle].werte.ziel = -1;
-							Anzeige_Auswahl("<q>Das / Die <b>Wasienkind / Prostituierte</b> sucht sich jede Nacht eine Person aus, bei dem es / sie schlafen kann. Ist die ausgewählte Person ein Mörder / Werwolf, oder das Opfer dieser so stirbt auch das Waisenkind / die Prostituierte</q> <b>(Waisenkind / Prostituierte erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+							Anzeige_Auswahl("<q>Das / Die <b>Waisenkind / Prostituierte</b> sucht sich jede Nacht eine Person aus, bei dem es / sie schlafen kann. Ist die ausgewählte Person ein Mörder / Werwolf, oder das Opfer dieser so stirbt auch das Waisenkind / die Prostituierte</q> <b>(Waisenkind / Prostituierte erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
 							break;
 						case 1:
 							if (Check_Auswahl(0,1,false))
@@ -1188,6 +1219,12 @@ function SpielReset()
 		if ((rollen[rids["harterbursche"]].anzahl>0) && (leute[ziel].rolle==rids["harterbursche"]) && contains(["werwolf"],ursprung) && (rollen[rids["harterbursche"]].werte.angegriffen==false))
 		{
 			rollen[rids["harterbursche"]].werte.angegriffen = true;
+			feedback.erfolg = false;
+			return feedback;
+		}
+		if (leute[ziel].rolle ==rids["survivor"] && contains(["werwolf", "hexe"], ursprung) && !rollen[rids["survivor"]].werte.angegriffen)
+		{
+			rollen[rids["survivor"]].werte.angegriffen = true;
 			feedback.erfolg = false;
 			return feedback;
 		}
