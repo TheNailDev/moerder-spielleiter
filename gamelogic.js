@@ -322,6 +322,75 @@ function SpielReset()
 		return true;
 	}
 	
+	// TODO: Wildes Kind fertig stellen
+	NeueRolle({
+		name:"Wildes Kind", strid:"wildkind", balance:-3,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Das <b>wilde Kind</b> erwacht. Es sucht sich gleich ein Vorbild aus. Solange das Vorbild lebt, ist das Wilde Kind ein Dorfbewohner. Sobald das Vorbild stirbt, wird das Wilde Kind zum Mörder / Werwolf.</q> <b>(Wildes Kind erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length>0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							cschritt = 0;
+							rollen[crolle].notiert = true;
+						}
+						break;
+				}
+			}
+			if (rollen[crolle].notiert)
+			{
+				if (!IstRolleAufzurufen(crolle))
+				{
+					cschritt = 3;
+				}
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						var rollentext = "<q><b>Welche Spieler</b> soll das Vorbild sein?</q>";
+						if (IstRolleInaktiv(crolle))
+						{
+							cschritt++;
+							Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
+						}
+						else
+						{
+							Anzeige_Auswahl(rollentext,function(spieler){return spieler.rolle!=rids["wildkind"];});
+						}
+						break;
+					case 1:
+						if (Check_Auswahl(1,1,true))
+						{
+							rollen[crolle].werte.vorbild = auswahl[0];
+							cschritt++;
+							Schritt();
+						}
+						break;
+					case 2:
+						cschritt++;
+						Anzeige_Notiz("<q>Das wilde Kind hat seine Wahl getroffen und schläft wieder ein.</q>");
+						break;
+					case 3:
+						rollen[crolle].erwacht = false;
+						RolleEnde();
+						break;
+				}
+			}
+		}
+	});
+	
 	NeueRolle({
 		name:"Jäger", strid:"jaeger", balance:-2,
 		funktion_nacht:function()
@@ -615,6 +684,7 @@ function SpielReset()
 					if (rollen[crolle].notiert)
 					{
 						var zusatzwolf = ((rollen[rids["verfluchter"]].anzahl>0) && (rollen[rids["verfluchter"]].werte.istwolf));
+						zusatzwolf = zusatzwolf || (rollen[rids["wildkind"]].anzahl>0 && !leute[rollen[rids["wildkind"]].werte.vorbild].lebt)
 						if (!IstRolleAufzurufen(crolle) && (!zusatzwolf))
 						{
 							cschritt = 3;
@@ -1088,7 +1158,7 @@ function SpielReset()
 									rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
 									if (rollen[crolle].werte.ziel!=-1)
 									{
-										antwort = (((leute[rollen[crolle].werte.ziel].rolle==rids["werwolf"]) || ((leute[rollen[crolle].werte.ziel].rolle==rids["verfluchter"]) && (rollen[rids["verfluchter"]].werte.istwolf )) || (leute[rollen[crolle].werte.ziel].rolle==rids["metzger"]) )?"JA!":"NEIN.");
+										antwort = (((leute[rollen[crolle].werte.ziel].rolle==rids["werwolf"]) || ((leute[rollen[crolle].werte.ziel].rolle==rids["verfluchter"]) && (rollen[rids["verfluchter"]].werte.istwolf )) || (leute[rollen[crolle].werte.ziel].rolle==rids["metzger"]) || (leute[rollen[crolle].werte.ziel].rolle==rids["wildkind"] && !leute[rollen[rids["wildkind"]].werte.vorbild].lebt) )?"JA!":"NEIN.");
 									}
 									else
 									{
@@ -1859,6 +1929,18 @@ function Check_Sieg()
 			if (leute[i].rolle==rids["werwolf"] || (leute[i].rolle==rids["verfluchter"] && rollen[rids["verfluchter"]].werte.istwolf))
 			{
 				boese++;
+			}
+			else if (leute[i].rolle==rids["wildkind"])
+			{
+				if (leute[rollen[rids["wildkind"]].werte.vorbild].lebt)
+				{
+					gute++;
+				}
+				else
+				{
+					rollen[rids["wildkind"]].istboese = true;
+					boese++;
+				}
 			}
 			else if (leute[i].rolle != rids["narr"])
 			{
