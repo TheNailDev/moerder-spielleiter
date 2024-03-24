@@ -586,6 +586,38 @@ function SpielReset()
 			}
 		}
 	});
+    
+    NeueRolle({
+		name:"Killerclown / Kahler Wolf", strid:"killerclown",
+        balance:-7,
+        istboese:true,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Der <b>Killerclown / kahle Wolf</b> gehört zu den Mördern / Werwölfen und wacht zusammen mit ihnen in der Nacht auf. Jedoch hält der Detektiv / Seher ihn für einen Bürger / Dorfbewohner.</q> <b>(Killerclown / kahlen Wolf erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
 	
 	NeueRolle({name:"Günstling",strid:"guenstling",
 				balance:-6,
@@ -685,6 +717,7 @@ function SpielReset()
 					{
 						var zusatzwolf = ((rollen[rids["verfluchter"]].anzahl>0) && (rollen[rids["verfluchter"]].werte.istwolf));
 						zusatzwolf = zusatzwolf || (rollen[rids["wildkind"]].anzahl>0 && !leute[rollen[rids["wildkind"]].werte.vorbild].lebt)
+                        zusatzwolf = zusatzwolf || (rollen[rids["killerclown"]].anzahl>0)
 						if (!IstRolleAufzurufen(crolle) && (!zusatzwolf))
 						{
 							cschritt = 3;
@@ -1928,7 +1961,7 @@ function Check_Sieg()
 	{
 		if (leute[i].lebt)
 		{
-			if (leute[i].rolle==rids["werwolf"] || (leute[i].rolle==rids["verfluchter"] && rollen[rids["verfluchter"]].werte.istwolf))
+			if (leute[i].rolle==rids["werwolf"] || leute[i].rolle==rids["killerclown"] || (leute[i].rolle==rids["verfluchter"] && rollen[rids["verfluchter"]].werte.istwolf))
 			{
 				boese++;
 			}
