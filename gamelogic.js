@@ -2103,7 +2103,7 @@ function Check_Auswahl(min, max, nullwarnung)
 }
 function Check_Sieg()
 {
-	if (IstNarrimSpiel())
+    if (IstNarrimSpiel())
 	{
 		if (!leute[rollen[rids["narr"]].spieler[0]].lebt)
 		{
@@ -2111,13 +2111,21 @@ function Check_Sieg()
 			return true;
 		}
 	}
-	var gute = 0;
+    var gute = 0;
 	var boese = 0;
     var soloMoerderLebt = false;
+    var verliebteLeben = false;
 	for (var i in leute)
 	{
 		if (leute[i].lebt)
 		{
+            if (rollen[rids["amor"]].anzahl>0 && rollen[rids["amor"]].werte.verliebte.length==2)
+            {
+                if (contains(rollen[rids["amor"]].werte.verliebte), i)
+                {
+                    verliebteLeben = true;
+                }
+            }
 			if (leute[i].rolle==rids["werwolf"] || leute[i].rolle==rids["killerclown"] || (leute[i].rolle==rids["verfluchter"] && rollen[rids["verfluchter"]].werte.istwolf))
 			{
 				boese++;
@@ -2139,7 +2147,7 @@ function Check_Sieg()
 					boese++;
 				}
 			}
-			else if (leute[i].rolle != rids["narr"])
+			else if ( !(IstNarrimSpiel() && leute[i].rolle == rids["narr"]) )
 			{
 				gute++;
 			}
@@ -2166,6 +2174,11 @@ function Check_Sieg()
 		Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Dorfbewohner gewinnen</div>');
 		return true;
 	}
+    if (verliebteLeben && gute + boese == 2)
+    {
+        Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Die Verliebten gewinnen</div>');
+		return true;
+    }
 	return false;
 }
 function SchrittuhrNeustart()
