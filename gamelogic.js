@@ -662,6 +662,119 @@ function SpielReset()
 					}
 				},
 				});
+    
+    KannVonSoloMoerderGetoetetWerden = function(spieler)
+    {
+        if (!spieler.lebt)
+        {
+            return false;
+        }
+        if (spieler.rolle==rids["werwolf"])
+        {
+            return true;
+        }
+        if (spieler.rolle==rids["killerclown"])
+        {
+            return true;
+        }
+        if (spieler.rolle==rids["verfluchter"] && rollen[rids["verfluchter"]].werte.istwolf)
+        {
+            return true;
+        }
+        if (spieler.rolle==rids["wildkind"] && !leute[rollen[rids["wildkind"]].werte.vorbild].lebt)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    NeueRolle({
+		name:"Solo-Mörder / Weißer Wolf", strid:"solomord",
+        balance:-4,
+        istboese:true,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+                rollen[crolle].werte.ziel = -1;
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Der <b>Solo-Mörder / weiße Wolf</b> gehört zu den Mördern / Werwölfen und wacht zusammen mit ihnen in der Nacht auf. Sein Ziel ist es, als einziges (ausgenommen Suizidgefährdeter / Narr) im Spiel zu bleiben. Jede zweite Nacht darf er einen Mörder / Wolf töten.</q> <b>(Solo-Mörder / weißen Wolf erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+            if (rollen[crolle].notiert)
+            {
+                // Rolle handelt nur jede zweite Nacht
+                if (nachtzahl % 2 == 0)
+                {
+                    if (!IstRolleAufzurufen(crolle) && (!zusatzwolf))
+                    {
+                        cschritt = 3;
+                    }
+                    switch (cschritt)
+                    {
+                        case 0:
+                            cschritt++;
+							var rollentext = "<q>Der Solo-Mörder / weiße Wolf erwacht. Welcher <b>Mörder / Wolf</b> soll diese Nacht sterben? Es darf auch keiner gewählt werden.</q>";
+							AuswahlReset();
+							if (IstRolleInaktiv(crolle))
+							{
+								Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
+								rollen[crolle].werte.ziel = -1;
+							}
+							else
+							{
+								Anzeige_Auswahl(rollentext,function(spieler){return KannVonSoloMoerderGetoetetWerden(spieler); });
+							}
+							break;
+                        case 1:
+                            if (Check_Auswahl(0,1,false))
+                            {
+                                if (auswahl.length > 0)
+                                {
+                                    rollen[crolle].werte.ziel = auswahl[0]
+                                }
+                                else
+                                {
+                                    rollen[crolle].werte.ziel = -1;
+                                }
+                                cschritt++;
+                                Schritt();
+                            }
+                            break;
+                        case 2:
+                            cschritt++;
+                            Anzeige_Notiz("<q>Der Solo-Mörder / weiße Wolf hat seine Wahl getroffen und schläft wieder ein.</q>");
+                            break;
+                        case 3:
+                            RolleEnde();
+                            break;
+                    }
+                }
+                else
+                {
+                    rollen[crolle].werte.ziel = -1;
+                    RolleEnde();
+                }
+            }
+		}
+	});
+    
 	NeueRolle({name:"Mörder / Werwölfe",strid:"werwolf",
 				balance:-6,
 				istboese:true,
@@ -690,7 +803,7 @@ function SpielReset()
 										var notiz = "<q>Die Mörder / Werwölfe erfahren nun, wer der Suizidgefährdete / Narr ist. Um zu gewinnen, dürft ihr ihn nicht umbringen.</q>";
 										if (IstNarrimSpiel())
 										{
-											notiz += "<b>(Symbolisiere den Mördern / Werwöfen, dass " + leute[rollen[rids["narr"]].spieler[0]].name + " der Suizidgefährdete / Narr ist)</b>";
+											notiz += "<b>(Symbolisiere den Mördern / Werwölfen, dass " + leute[rollen[rids["narr"]].spieler[0]].name + " der Suizidgefährdete / Narr ist)</b>";
 											
 										}
 										else
@@ -718,6 +831,7 @@ function SpielReset()
 						var zusatzwolf = ((rollen[rids["verfluchter"]].anzahl>0) && (rollen[rids["verfluchter"]].werte.istwolf));
 						zusatzwolf = zusatzwolf || (rollen[rids["wildkind"]].anzahl>0 && !leute[rollen[rids["wildkind"]].werte.vorbild].lebt)
                         zusatzwolf = zusatzwolf || (rollen[rids["killerclown"]].anzahl>0)
+                        zusatzwolf = zusatzwolf || (rollen[rids["solomord"]].anzahl>0)
 						if (!IstRolleAufzurufen(crolle) && (!zusatzwolf))
 						{
 							cschritt = 3;
@@ -1192,7 +1306,27 @@ function SpielReset()
 									rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
 									if (rollen[crolle].werte.ziel!=-1)
 									{
-										antwort = (((leute[rollen[crolle].werte.ziel].rolle==rids["werwolf"]) || ((leute[rollen[crolle].werte.ziel].rolle==rids["verfluchter"]) && (rollen[rids["verfluchter"]].werte.istwolf )) || (leute[rollen[crolle].werte.ziel].rolle==rids["metzger"]) || (leute[rollen[crolle].werte.ziel].rolle==rids["wildkind"] && !leute[rollen[rids["wildkind"]].werte.vorbild].lebt) )?"JA!":"NEIN.");
+                                        antwort = "NEIN";
+                                        if ( leute[rollen[crolle].werte.ziel].rolle==rids["werwolf"] )
+                                        {
+                                            antwort = "JA!";
+                                        }
+                                        else if ( leute[rollen[crolle].werte.ziel].rolle==rids["solomord"] )
+                                        {
+                                            antwort = "JA!";
+                                        }
+                                        else if ( leute[rollen[crolle].werte.ziel].rolle==rids["metzger"] )
+                                        {
+                                            antwort = "JA!";
+                                        }
+                                        else if ( leute[rollen[crolle].werte.ziel].rolle==rids["verfluchter"] && rollen[rids["verfluchter"]].werte.istwolf )
+                                        {
+                                            antwort = "JA!";
+                                        }
+                                        else if ( leute[rollen[crolle].werte.ziel].rolle==rids["wildkind"] && !leute[rollen[rids["wildkind"]].werte.vorbild].lebt )
+                                        {
+                                            antwort = "JA!";
+                                        }
 									}
 									else
 									{
@@ -1423,6 +1557,25 @@ function SpielReset()
 				var gestorben_ids = new Array();
 				var zusatztext = "";
 				
+                //Waisenkind hat bei Werwolf geschlafen
+				if (rollen[rids["waise"]].anzahl>0 && rollen[rids["waise"]].werte.ziel>=0)
+				{
+					var waisenZielRolle = leute[rollen[rids["waise"]].werte.ziel].rolle;
+                    var waisenZielToetet = waisenZielRolle == rids["werwolf"] || waisenZielRolle == rids["killerclown"] || waisenZielRolle == rids["solomord"];
+                    waisenZielToetet = waisenZielToetet || ( waisenZielRolle == rids["verfluchter"] && rollen[rids["verfluchter"]].werte.istwolf );
+                    waisenZielToetet = waisenZielToetet || ( waisenZielRolle == rids["wildkind"] && !leute[rollen[rids["wildkind"]].werte.vorbild].lebt);
+                    if (waisenZielToetet)
+					{
+						var ziel = rollen[rids["waise"]].spieler[0];
+						var feedback = SpielerToeten(ziel, "waise");
+						if (feedback.erfolg)
+						{
+							zusatztext += feedback.ausgabe;
+							gestorben_namen.push(leute[ziel].name);
+							gestorben_ids.push(leute[ziel].spielerID);
+						}
+					}
+				}
 				//Harter-Bursche-Verzögerungstod
 				if ((rollen[rids["harterbursche"]].anzahl>0) && (rollen[rids["harterbursche"]].werte.angegriffen))
 				{
@@ -1447,6 +1600,19 @@ function SpielReset()
 						gestorben_ids.push(leute[ziel].spielerID);
 					}
 				}
+                //Opfer des Solo-Mörders
+                if ( rollen[rids["solomord"]].anzahl > 0 && rollen[rids["solomord"]].werte.ziel >= 0)
+                {
+                    var ziel = rollen[rids["solomord"]].werte.ziel;
+					var feedback = SpielerToeten(ziel, "solomord");
+					if (feedback.erfolg)
+					{
+						zusatztext += feedback.ausgabe;
+						gestorben_namen.push(leute[ziel].name);
+						gestorben_ids.push(leute[ziel].spielerID);
+					}
+                    rollen[rids["solomord"]].werte.ziel = -1;
+                }
 				//Gifttod (Hexe)
 				if ((rollen[rids["hexe"]].anzahl>0) && (rollen[rids["hexe"]].werte.ziel_toeten>=0))
 				{
@@ -1457,21 +1623,6 @@ function SpielReset()
 						zusatztext += feedback.ausgabe;
 						gestorben_namen.push(leute[ziel].name);
 						gestorben_ids.push(leute[ziel].spielerID);
-					}
-				}
-				//Waisenkind hat bei Werwolf geschlafen
-				if (rollen[rids["waise"]].anzahl>0 && rollen[rids["waise"]].werte.ziel>=0)
-				{
-					if (leute[rollen[rids["waise"]].werte.ziel].rolle == rids["werwolf"])
-					{
-						var ziel = rollen[rids["waise"]].spieler[0];
-						var feedback = SpielerToeten(ziel, "waise");
-						if (feedback.erfolg)
-						{
-							zusatztext += feedback.ausgabe;
-							gestorben_namen.push(leute[ziel].name);
-							gestorben_ids.push(leute[ziel].spielerID);
-						}
 					}
 				}
 				//Alte Vettel
@@ -1956,12 +2107,13 @@ function Check_Sieg()
 	{
 		if (!leute[rollen[rids["narr"]].spieler[0]].lebt)
 		{
-			Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Der Suizifgefährdete / Narr gewinnt</div>');
+			Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Der Suizidfgefährdete / Narr gewinnt</div>');
 			return true;
 		}
 	}
 	var gute = 0;
 	var boese = 0;
+    var soloMoerderLebt = false;
 	for (var i in leute)
 	{
 		if (leute[i].lebt)
@@ -1970,6 +2122,11 @@ function Check_Sieg()
 			{
 				boese++;
 			}
+            else if (leute[i].rolle==rids["solomord"])
+            {
+                soloMoerderLebt = true;
+                boese++;
+            }
 			else if (leute[i].rolle==rids["wildkind"])
 			{
 				if (leute[rollen[rids["wildkind"]].werte.vorbild].lebt)
@@ -1990,8 +2147,19 @@ function Check_Sieg()
 	}
 	if (gute == 0)
 	{
-		Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Mörder / Werwölfe gewinnen</div>');
-		return true;
+        if (soloMoerderLebt)
+        {
+            if (boese == 1)
+            {
+                Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Solo-Mörder / Weißer Wolf gewinnt</div>');
+                return true;
+            }
+        }
+        else
+        {
+            Anzeige_Zusatz('<div class="zentriermich"><b>SPIELENDE</b><br>Mörder / Werwölfe gewinnen</div>');
+            return true;
+        }
 	}
 	if (boese == 0)
 	{
