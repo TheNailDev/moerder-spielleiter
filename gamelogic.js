@@ -1054,6 +1054,7 @@ function SpielReset()
 							case 0:
 								cschritt++;
 								rollen[crolle].werte.istwolf = false;
+                                rollen[crolle].werte.wolfSchutz = true;
 								Anzeige_Auswahl("<q>Der <b>Verfluchte</b> erwacht. Er bleibt solange ein normaler Dorfbewohner und versucht mit diesen zu gewinnen, bis er von den Wölfen angegriffen wird. Daraufhin wechselt er die Seiten: Er ist als Wolf zu behandeln und - wichtig! - erwacht auch mit diesen. <i>Jede Nacht wird dem Verfluchten gezeigt, ob er sich verwandelt hat!</i></q> <b>(Verfluchten erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
 								break;
 							case 1:
@@ -1281,9 +1282,10 @@ function SpielReset()
 			feedback.erfolg = false;
 			return feedback;
 		}
-		if ((rollen[rids["verfluchter"]].anzahl>0) && (leute[ziel].rolle==rids["verfluchter"]) && contains(["werwolf"],ursprung))
+		if ((rollen[rids["verfluchter"]].anzahl>0) && (leute[ziel].rolle==rids["verfluchter"]) && contains(["werwolf"],ursprung) && (rollen[rids["verfluchter"]].werte.wolfSchutz))
 		{
 			feedback.erfolg = false;
+            rollen[rids["verfluchter"]].werte.wolfSchutz = false;
 			return feedback;
 		}
 		if ((rollen[rids["harterbursche"]].anzahl>0) && (leute[ziel].rolle==rids["harterbursche"]) && contains(["werwolf"],ursprung) && (rollen[rids["harterbursche"]].werte.angegriffen==false))
