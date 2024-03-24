@@ -1333,6 +1333,11 @@ function SpielReset()
 			feedback.erfolg = false;
 			return feedback;
 		}
+        if (leute[ziel].rolle == rids["waise"] && contains(["werwolf", "hexe"], ursprung))
+        {
+            feedback.erfolg = false;
+            return feedback;
+        }
 
 		//TOD VERARBEITEN
 		leute[ziel].lebt = false;
