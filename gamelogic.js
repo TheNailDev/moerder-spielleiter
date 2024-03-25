@@ -775,6 +775,37 @@ function SpielReset()
 		}
 	});
     
+    NeueRolle({
+		name:"Schaulustiger / Blinzelmädchen", strid:"schaulustiger",
+        balance:+8,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Der / das <b>Schaulustige / Blinzelmädchen</b> gehört zu den Bürgern / Dorfbewohnern. In der Nacht darf er / sie zusammen mit den Mördern erwachen, aber sollte versuchen, nicht von den Mördern / Wölfen erkannt zu werden.</q> <b>(Schaulustigen / Blinzelmädchen erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
+    
 	NeueRolle({name:"Mörder / Werwölfe",strid:"werwolf",
 				balance:-6,
 				istboese:true,
