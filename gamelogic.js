@@ -322,135 +322,6 @@ function SpielReset()
 		return true;
 	}
 	
-	// TODO: Wildes Kind fertig stellen
-	NeueRolle({
-		name:"Wildes Kind", strid:"wildkind", balance:-3,
-		funktion_nacht:function()
-		{
-			if (!rollen[crolle].notiert)
-			{
-				switch (cschritt)
-				{
-					case 0:
-						cschritt++;
-						Anzeige_Auswahl("<q>Das <b>wilde Kind</b> erwacht. Es sucht sich gleich ein Vorbild aus. Solange das Vorbild lebt, ist das Wilde Kind ein Dorfbewohner. Sobald das Vorbild stirbt, wird das Wilde Kind zum Mörder / Werwolf.</q> <b>(Wildes Kind erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
-						break;
-					case 1:
-						if (Check_Auswahl(0,1,false))
-						{
-							if (auswahl.length>0)
-							{
-								rollen[crolle].spieler = auswahl;
-								RollenUebertragen(crolle);
-							}
-							cschritt = 0;
-							rollen[crolle].notiert = true;
-						}
-						break;
-				}
-			}
-			if (rollen[crolle].notiert)
-			{
-				if (!IstRolleAufzurufen(crolle))
-				{
-					cschritt = 3;
-				}
-				switch (cschritt)
-				{
-					case 0:
-						cschritt++;
-						var rollentext = "<q><b>Welche Spieler</b> soll das Vorbild sein?</q>";
-						if (IstRolleInaktiv(crolle))
-						{
-							cschritt++;
-							Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
-						}
-						else
-						{
-							Anzeige_Auswahl(rollentext,function(spieler){return spieler.rolle!=rids["wildkind"];});
-						}
-						break;
-					case 1:
-						if (Check_Auswahl(1,1,true))
-						{
-							rollen[crolle].werte.vorbild = auswahl[0];
-							cschritt++;
-							Schritt();
-						}
-						break;
-					case 2:
-						cschritt++;
-						Anzeige_Notiz("<q>Das wilde Kind hat seine Wahl getroffen und schläft wieder ein.</q>");
-						break;
-					case 3:
-						rollen[crolle].erwacht = false;
-						RolleEnde();
-						break;
-				}
-			}
-		}
-	});
-	
-	NeueRolle({
-		name:"Jäger", strid:"jaeger", balance:-2,
-		funktion_nacht:function()
-		{
-			if (!rollen[crolle].notiert)
-			{
-				switch (cschritt)
-				{
-					case 0:
-						cschritt++;
-						Anzeige_Auswahl("<q>Wenn der <b>Jäger</b> stirbt, darf dieser als letzte Aktion einen anderen Mitspieler erschießen.</q> <b>(Jäger erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
-						break;
-					case 1:
-						if (Check_Auswahl(0,1,false))
-						{
-							if (auswahl.length > 0)
-							{
-								rollen[crolle].spieler = auswahl;
-								RollenUebertragen(crolle);
-							}
-							rollen[crolle].notiert = true;
-							rollen[crolle].erwacht = false;
-							RolleEnde();
-						}
-						break;
-				}
-			}
-		}
-	});
-	
-	NeueRolle({
-		name:"Attentäter", strid:"bomber", balance:-4,
-		funktion_nacht:function()
-		{
-			if (!rollen[crolle].notiert)
-			{
-				switch (cschritt)
-				{
-					case 0:
-						cschritt++;
-						Anzeige_Auswahl("<q>Wenn der <b>Attentäter</b> stirbt, zündet er eine Bombe und die Mitspieler links und rechts von Ihm sterben ebenfalls.</q> <b>(Attentäter erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
-						break;
-					case 1:
-						if (Check_Auswahl(0,1,false))
-						{
-							if (auswahl.length > 0)
-							{
-								rollen[crolle].spieler = auswahl;
-								RollenUebertragen(crolle);
-							}
-							rollen[crolle].notiert = true;
-							rollen[crolle].erwacht = false;
-							RolleEnde();
-						}
-						break;
-				}
-			}
-		}
-	});
-	
 	NeueRolle({name:"Amor",strid:"amor",
 				balance:-3,
 				funktion_nacht:function()
@@ -525,37 +396,6 @@ function SpielReset()
 					}
 				},
 				});
-				
-	NeueRolle({
-		name:"Überlebenskünstler", strid:"survivor", balance:+1,
-		funktion_nacht:function()
-		{
-			if (!rollen[crolle].notiert)
-			{
-				switch (cschritt)
-				{
-					case 0:
-						cschritt++;
-						rollen[crolle].werte.angegriffen = false;
-						Anzeige_Auswahl("<q>Der <b>Überlebenskünstler</b> überlebt Nachts den einmalig einen Mordversuch.</q> <b>(Überlebenskünstler erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
-						break;
-					case 1:
-						if (Check_Auswahl(0,1,false))
-						{
-							if (auswahl.length > 0)
-							{
-								rollen[crolle].spieler = auswahl;
-								RollenUebertragen(crolle);
-							}
-							rollen[crolle].notiert = true;
-							rollen[crolle].erwacht = false;
-							RolleEnde();
-						}
-						break;
-				}
-			}
-		}
-	});
 	
 	NeueRolle({
 		name:"Metzger / Haariger", strid:"metzger", balance:-1,
@@ -618,50 +458,6 @@ function SpielReset()
 			}
 		}
 	});
-	
-	NeueRolle({name:"Günstling",strid:"guenstling",
-				balance:-6,
-				istboese:true,
-				funktion_nacht:function()
-				{
-					if (!rollen[crolle].notiert)
-					{
-						switch (cschritt)
-						{
-							case 0:
-								cschritt++;
-								Anzeige_Auswahl("<q>Der <b>Günstling</b> erwacht. Er steht auf der Seite der Werwölfe, verwandelt sich aber nicht und wird daher vom Seher auch nicht als Feind erkannt.</q> <b>(Günstling erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
-								break;
-							case 1:
-								if (Check_Auswahl(0,1,false))
-								{
-									if (auswahl.length>0)
-									{
-										rollen[crolle].spieler = auswahl;
-										RollenUebertragen(crolle);
-									}
-									cschritt = 0;
-									rollen[crolle].notiert = true;
-								}
-								break;
-						}
-					}
-					if (rollen[crolle].notiert)
-					{
-						switch (cschritt)
-						{
-							case 0:
-								cschritt++;
-								Anzeige_Notiz("<q>Zusätzlich erwachen nun alle Werwölfe und der Günstling gibt sich ihnen zu erkennen (z.b. durch Winken).</q>"+(rollen[crolle].spieler.length==0?"<b>(Signalisiere den Wölfen, dass es keinen Günstling gibt!)</b>":"")+"<q>Anschließend schlafen alle wieder ein.</q>");
-								break;
-							case 1:
-								rollen[crolle].erwacht = false;
-								RolleEnde();
-								break;
-						}
-					}
-				},
-				});
     
     KannVonSoloMoerderGetoetetWerden = function(spieler)
     {
@@ -806,6 +602,50 @@ function SpielReset()
 		}
 	});
     
+    NeueRolle({name:"Günstling",strid:"guenstling",
+				balance:-6,
+				istboese:true,
+				funktion_nacht:function()
+				{
+					if (!rollen[crolle].notiert)
+					{
+						switch (cschritt)
+						{
+							case 0:
+								cschritt++;
+								Anzeige_Auswahl("<q>Der <b>Günstling</b> erwacht. Er steht auf der Seite der Werwölfe, verwandelt sich aber nicht und wird daher vom Seher auch nicht als Feind erkannt.</q> <b>(Günstling erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+								break;
+							case 1:
+								if (Check_Auswahl(0,1,false))
+								{
+									if (auswahl.length>0)
+									{
+										rollen[crolle].spieler = auswahl;
+										RollenUebertragen(crolle);
+									}
+									cschritt = 0;
+									rollen[crolle].notiert = true;
+								}
+								break;
+						}
+					}
+					if (rollen[crolle].notiert)
+					{
+						switch (cschritt)
+						{
+							case 0:
+								cschritt++;
+								Anzeige_Notiz("<q>Zusätzlich erwachen nun alle Werwölfe und der Günstling gibt sich ihnen zu erkennen (z.b. durch Winken).</q>"+(rollen[crolle].spieler.length==0?"<b>(Signalisiere den Wölfen, dass es keinen Günstling gibt!)</b>":"")+"<q>Anschließend schlafen alle wieder ein.</q>");
+								break;
+							case 1:
+								rollen[crolle].erwacht = false;
+								RolleEnde();
+								break;
+						}
+					}
+				},
+				});
+    
 	NeueRolle({name:"Mörder / Werwölfe",strid:"werwolf",
 				balance:-6,
 				istboese:true,
@@ -897,72 +737,6 @@ function SpielReset()
 				},
 				});
 	
-	NeueRolle({
-			name:"Waisenkind / Prostituierte", strid:"waise",
-			funktion_nacht: function()
-			{
-				if (!rollen[crolle].notiert)
-				{
-					switch (cschritt)
-					{
-						case 0:
-							cschritt++;
-							rollen[crolle].werte.ziel = -1;
-							Anzeige_Auswahl("<q>Das / Die <b>Waisenkind / Prostituierte</b> sucht sich jede Nacht eine Person aus, bei dem es / sie schlafen kann. Ist die ausgewählte Person ein Mörder / Werwolf, oder das Opfer dieser so stirbt auch das Waisenkind / die Prostituierte</q> <b>(Waisenkind / Prostituierte erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
-							break;
-						case 1:
-							if (Check_Auswahl(0,1,false))
-							{
-								if (auswahl.length > 0)
-								{
-									rollen[crolle].spieler = auswahl;
-									RollenUebertragen(crolle);
-								}
-								cschritt = 0;
-								rollen[crolle].notiert = true;
-							}
-							break;
-					}
-				}
-				if (rollen[crolle].notiert)
-				{
-					if (!IstRolleAufzurufen(crolle))
-					{
-						rollen[crolle].werte.ziel = -1;
-						cschritt = 2;
-					}
-					switch (cschritt)
-					{
-						case 0:
-							cschritt++;
-							var rollentext = "<q>Das Waisenkind / Die Prostituierte erwacht. Bei <b>Wem</b> möchte es / sie in dieser Nacht schlafen?</q>";
-							AuswahlReset();
-							if (IstRolleInaktiv(crolle))
-							{
-								Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
-								rollen[crolle].werte.ziel = -1;
-							}
-							else
-							{
-								Anzeige_Auswahl(rollentext,function(spieler){return (spieler.lebt && spieler.rolle!=rids["waise"]); });
-							}
-							break;
-						case 1:
-							if (Check_Auswahl(0,1,!IstRolleInaktiv(crolle)))
-							{
-								rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
-								Anzeige_Notiz("<q>Das Waisenkind / Die Prostituierte hat seine / ihre Wahl getroffen und schläft wieder ein.</q>");
-								cschritt++;
-							}
-							break;
-						case 2:
-							RolleEnde();
-							break;
-					}
-				}
-			}
-		});
-	
 	NeueRolle({name:"Krankenschwester / Nachtwächter / Priester",strid:"leibwaechter",
 				balance:+3,
 				funktion_nacht:function()
@@ -1029,81 +803,7 @@ function SpielReset()
 					}
 				},
 				});
-	NeueRolle({name:"Alte Vettel",strid:"altevettel",
-				balance:+1,
-				funktion_nacht:function()
-				{
-					if (!rollen[crolle].notiert)
-					{
-						switch (cschritt)
-						{
-							case 0:
-								cschritt++;
-								Anzeige_Auswahl("<q>Die <b>Alte Vettel</b> verbreitet so schlimme Gerüchte, dass der betroffene Dorfbewohner sich am folgenden Tag nicht blicken lassen kann. Da er nicht anwesend ist, kann er weder etwas zur Diskussion beitragen noch kann gegen ihn gestimmt werden.</q> <b>(Alte Vettel erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
-								rollen[crolle].werte.ziel = -1;
-								break;
-							case 1:
-								if (Check_Auswahl(0,1,false))
-								{
-									if (auswahl.length>0)
-									{
-										rollen[crolle].spieler = auswahl;
-										RollenUebertragen(crolle);
-									}
-									cschritt = 0;
-									rollen[crolle].notiert = true;
-								}
-								break;
-						}
-					}
-					if (rollen[crolle].notiert)
-					{
-						if (!IstRolleAufzurufen(crolle))
-						{
-							rollen[crolle].werte.ziel = -1;
-							cschritt = 3;
-						}
-						switch (cschritt)
-						{
-							case 0:
-								cschritt++;
-								var rollentext = "<q>Die Alte Vettel erwacht. <b>Über wen</b> möchte sie Gerüchte verbreiten? (Eigenwahl verboten)</q>";
-								AuswahlReset();
-								if (IstRolleInaktiv(crolle))
-								{
-									cschritt++;
-									Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
-									rollen[crolle].werte.ziel = -1;
-								}
-								else
-								{
-									Anzeige_Auswahl(rollentext,function(spieler){if (spieler.lebt && (spieler.rolle!=rids["altevettel"])) {return true;} else return false;});
-								}
-								break;
-							case 1:
-								if (Check_Auswahl(0,1,true))
-								{
-									rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
-									if (auswahl.length>0)
-									{
-										leute[auswahl[0]].verstummt = true;
-										leute[auswahl[0]].waehlbar = false;
-									}
-									cschritt++;
-									Schritt();
-								}
-								break;
-							case 2:
-								cschritt++;
-								Anzeige_Notiz("<q>Die Alte Vettel hat ihre Wahl getroffen und schläft wieder ein.</q>");
-								break;
-							case 3:
-								RolleEnde();
-								break;
-						}
-					}
-				},
-				});
+	
 	NeueRolle({name:"Hexe",strid:"hexe",
 				balance:+4,
 				funktion_nacht:function()
@@ -1221,6 +921,75 @@ function SpielReset()
 					}
 				},
 				});
+    
+    NeueRolle({
+		name:"Wildes Kind", strid:"wildkind", balance:-3,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Das <b>wilde Kind</b> erwacht. Es sucht sich gleich ein Vorbild aus. Solange das Vorbild lebt, ist das Wilde Kind ein Dorfbewohner. Sobald das Vorbild stirbt, wird das Wilde Kind zum Mörder / Werwolf.</q> <b>(Wildes Kind erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length>0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							cschritt = 0;
+							rollen[crolle].notiert = true;
+						}
+						break;
+				}
+			}
+			if (rollen[crolle].notiert)
+			{
+				if (!IstRolleAufzurufen(crolle))
+				{
+					cschritt = 3;
+				}
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						var rollentext = "<q><b>Welche Spieler</b> soll das Vorbild sein?</q>";
+						if (IstRolleInaktiv(crolle))
+						{
+							cschritt++;
+							Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
+						}
+						else
+						{
+							Anzeige_Auswahl(rollentext,function(spieler){return spieler.rolle!=rids["wildkind"];});
+						}
+						break;
+					case 1:
+						if (Check_Auswahl(1,1,true))
+						{
+							rollen[crolle].werte.vorbild = auswahl[0];
+							cschritt++;
+							Schritt();
+						}
+						break;
+					case 2:
+						cschritt++;
+						Anzeige_Notiz("<q>Das wilde Kind hat seine Wahl getroffen und schläft wieder ein.</q>");
+						break;
+					case 3:
+						rollen[crolle].erwacht = false;
+						RolleEnde();
+						break;
+				}
+			}
+		}
+	});
+    
 	NeueRolle({name:"Verfluchter",strid:"verfluchter",
 				balance:-3,
 				funktion_nacht:function()
@@ -1374,6 +1143,149 @@ function SpielReset()
 					}
 				},
 				});
+    
+    NeueRolle({
+			name:"Waisenkind / Prostituierte", strid:"waise",
+			funktion_nacht: function()
+			{
+				if (!rollen[crolle].notiert)
+				{
+					switch (cschritt)
+					{
+						case 0:
+							cschritt++;
+							rollen[crolle].werte.ziel = -1;
+							Anzeige_Auswahl("<q>Das / Die <b>Waisenkind / Prostituierte</b> sucht sich jede Nacht eine Person aus, bei dem es / sie schlafen kann. Ist die ausgewählte Person ein Mörder / Werwolf, oder das Opfer dieser so stirbt auch das Waisenkind / die Prostituierte</q> <b>(Waisenkind / Prostituierte erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+							break;
+						case 1:
+							if (Check_Auswahl(0,1,false))
+							{
+								if (auswahl.length > 0)
+								{
+									rollen[crolle].spieler = auswahl;
+									RollenUebertragen(crolle);
+								}
+								cschritt = 0;
+								rollen[crolle].notiert = true;
+							}
+							break;
+					}
+				}
+				if (rollen[crolle].notiert)
+				{
+					if (!IstRolleAufzurufen(crolle))
+					{
+						rollen[crolle].werte.ziel = -1;
+						cschritt = 2;
+					}
+					switch (cschritt)
+					{
+						case 0:
+							cschritt++;
+							var rollentext = "<q>Das Waisenkind / Die Prostituierte erwacht. Bei <b>Wem</b> möchte es / sie in dieser Nacht schlafen?</q>";
+							AuswahlReset();
+							if (IstRolleInaktiv(crolle))
+							{
+								Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
+								rollen[crolle].werte.ziel = -1;
+							}
+							else
+							{
+								Anzeige_Auswahl(rollentext,function(spieler){return (spieler.lebt && spieler.rolle!=rids["waise"]); });
+							}
+							break;
+						case 1:
+							if (Check_Auswahl(0,1,!IstRolleInaktiv(crolle)))
+							{
+								rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
+								Anzeige_Notiz("<q>Das Waisenkind / Die Prostituierte hat seine / ihre Wahl getroffen und schläft wieder ein.</q>");
+								cschritt++;
+							}
+							break;
+						case 2:
+							RolleEnde();
+							break;
+					}
+				}
+			}
+		});
+    
+    NeueRolle({name:"Lästerschwester / Alte Vettel",strid:"altevettel",
+				balance:+1,
+				funktion_nacht:function()
+				{
+					if (!rollen[crolle].notiert)
+					{
+						switch (cschritt)
+						{
+							case 0:
+								cschritt++;
+								Anzeige_Auswahl("<q>Die <b>Lästerschwester / Alte Vettel</b> verbreitet so schlimme Gerüchte, dass der betroffene Dorfbewohner sich am folgenden Tag nicht blicken lassen kann. Da er nicht anwesend ist, kann er weder etwas zur Diskussion beitragen noch kann gegen ihn gestimmt werden.</q> <b>(Lästerschwester / Alte Vettel erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+								rollen[crolle].werte.ziel = -1;
+								break;
+							case 1:
+								if (Check_Auswahl(0,1,false))
+								{
+									if (auswahl.length>0)
+									{
+										rollen[crolle].spieler = auswahl;
+										RollenUebertragen(crolle);
+									}
+									cschritt = 0;
+									rollen[crolle].notiert = true;
+								}
+								break;
+						}
+					}
+					if (rollen[crolle].notiert)
+					{
+						if (!IstRolleAufzurufen(crolle))
+						{
+							rollen[crolle].werte.ziel = -1;
+							cschritt = 3;
+						}
+						switch (cschritt)
+						{
+							case 0:
+								cschritt++;
+								var rollentext = "<q>Die Lästerschwester / Alte Vettel erwacht. <b>Über wen</b> möchte sie Gerüchte verbreiten? (Eigenwahl verboten)</q>";
+								AuswahlReset();
+								if (IstRolleInaktiv(crolle))
+								{
+									cschritt++;
+									Anzeige_Notiz(rollentext+einstellungen["text_vorsicht_tot"].wert);
+									rollen[crolle].werte.ziel = -1;
+								}
+								else
+								{
+									Anzeige_Auswahl(rollentext,function(spieler){if (spieler.lebt && (spieler.rolle!=rids["altevettel"])) {return true;} else return false;});
+								}
+								break;
+							case 1:
+								if (Check_Auswahl(0,1,true))
+								{
+									rollen[crolle].werte.ziel = (auswahl.length>0?auswahl[0]:-1);
+									if (auswahl.length>0)
+									{
+										leute[auswahl[0]].verstummt = true;
+										leute[auswahl[0]].waehlbar = false;
+									}
+									cschritt++;
+									Schritt();
+								}
+								break;
+							case 2:
+								cschritt++;
+								Anzeige_Notiz("<q>Die Lästerschwester / Alte Vettel hat ihre Wahl getroffen und schläft wieder ein.</q>");
+								break;
+							case 3:
+								RolleEnde();
+								break;
+						}
+					}
+				},
+				});
+    
 	NeueRolle({name:"Prinz",strid:"prinz",
 				balance:+3,
 				funktion_nacht:function()
@@ -1404,6 +1316,38 @@ function SpielReset()
 					}
 				},
 				});
+    
+    NeueRolle({
+		name:"Überlebenskünstler", strid:"survivor", balance:+1,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						rollen[crolle].werte.angegriffen = false;
+						Anzeige_Auswahl("<q>Der <b>Überlebenskünstler</b> überlebt Nachts einmalig einen Mordversuch.</q> <b>(Überlebenskünstler erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
+    
 	NeueRolle({name:"Harter Bursche",strid:"harterbursche",
 				balance:+3,
 				funktion_nacht:function()
@@ -1434,7 +1378,68 @@ function SpielReset()
 					}
 				},
 				});
-	NeueRolle({name:"Dorfbewohner",strid:"dorfbewohner",
+                
+    NeueRolle({
+		name:"Jäger", strid:"jaeger", balance:-2,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Wenn der <b>Jäger</b> stirbt, darf dieser als letzte Aktion einen anderen Mitspieler erschießen.</q> <b>(Jäger erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
+	
+	NeueRolle({
+		name:"Attentäter", strid:"bomber", balance:-4,
+		funktion_nacht:function()
+		{
+			if (!rollen[crolle].notiert)
+			{
+				switch (cschritt)
+				{
+					case 0:
+						cschritt++;
+						Anzeige_Auswahl("<q>Wenn der <b>Attentäter</b> stirbt, zündet er eine Bombe und die Mitspieler links und rechts von Ihm sterben ebenfalls.</q> <b>(Attentäter erfassen falls vorhanden)</b>",function(spieler){return HatKeineRolle(spieler);});
+						break;
+					case 1:
+						if (Check_Auswahl(0,1,false))
+						{
+							if (auswahl.length > 0)
+							{
+								rollen[crolle].spieler = auswahl;
+								RollenUebertragen(crolle);
+							}
+							rollen[crolle].notiert = true;
+							rollen[crolle].erwacht = false;
+							RolleEnde();
+						}
+						break;
+				}
+			}
+		}
+	});
+    
+	NeueRolle({name:"Bürger / Dorfbewohner",strid:"dorfbewohner",
 				balance:+1,
 				einzelrolle:false,
 				funktion_nacht:function()
