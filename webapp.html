@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html manifest="werwolf.appcache" lang="de">
+	<!--@ TheNails Mörder-Spielleiter-App basierend auf Nikos Werwolf-Spielleiter-Web-App -->
+	<head>
+		<meta name="HandheldFriendly" content="true"/>
+	    <meta name="MobileOptimized" content="320"/>
+		<meta name="viewport" content="width=320,initial-scale=1.0,target-densityDpi=145"/>
+		<meta name="apple-mobile-web-app-capable" content="yes"/>
+		<meta charset="utf-8"/>
+		<title>Mörder-Spielleiter-App</title>
+		<style>
+			/* CSS-Reset */
+			html, body, div, span, applet, object, iframe,
+			h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+			a, abbr, acronym, address, big, cite, code,
+			del, dfn, em, font, img, ins, kbd, q, s, samp,
+			small, strike, strong, sub, sup, tt, var,
+			dl, dt, dd, ol, ul, li,
+			 form, label, legend,
+			table, caption, tbody, tfoot, thead, tr, th, td {
+				margin: 0;
+				padding: 0;
+				border: 0;
+				outline: 0;
+				font-weight: inherit;
+				font-style: inherit;
+				font-size: 100%;
+				font-family: inherit;
+				vertical-align: baseline;
+			}
+			:focus {
+				outline: 0;
+			}
+			body {
+				line-height: 1;
+				color: black;
+				background: white;
+			}
+			ol, ul {
+				list-style: none;
+			}
+			table {
+				border-collapse: separate;
+				border-spacing: 0;
+			}
+			caption, th, td {
+				text-align: left;
+				font-weight: normal;
+			}
+			blockquote:before, blockquote:after,
+			q:before, q:after {
+				content: "";
+			}
+			blockquote, q {
+				quotes: "" "";
+			}
+			/* ENDE CSS Reset */
+			body
+			{
+				font: 20px verdana, sans-serif;
+				width:320px;
+				-moz-user-select: -moz-none;
+				-khtml-user-select: none;
+				-webkit-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+			h1
+			{
+				color: #555555;
+				font-weight: bold;
+				text-shadow: 0 -1px 1px #000000;
+				text-align: center;
+				margin: 0px 0px 3px 0px;
+				font-size:1.2em;
+				font-weight:bold;
+				font-variant:small-caps;
+			}
+			h2
+			{
+				text-align: right;
+				margin-top:0px;
+				color:#555555;
+				font-size:1.3em;
+				font-weight:bold;
+				font-variant:small-caps;
+			}
+			h3
+			{
+				text-align: left;
+				margin-top:0px;
+				color:#666666;
+				font-size:1.0em;
+				font-weight:bold;
+				font-variant:small-caps;
+			}
+			fieldset
+			{
+				border:7px solid #999999;
+				border-radius:15px;
+				border-radius:15px;
+				background-color:#f0f8ff;
+				padding:5px;
+				padding-top:0px;
+				margin-bottom:10px;
+				margin-left:0px;
+				margin-right:0px;
+			}
+			hr
+			{
+				width:95%;
+				border:2px solid #999999;
+			}
+			select
+			{
+				border: 2px solid #AAAAAA;
+				padding: 4px 3px 3px 5px;
+				margin: 0;
+				font: inherit;
+				outline:none;
+				line-height: 1.1;
+				background: #DDDDDD;
+				-webkit-appearance:none;
+				border-radius: 10px;
+			}
+			ul
+			{
+				border: 2px solid #bbb;
+				box-shadow: 5px 5px 5px #888;
+				margin: 3px 10px 10px 3px;
+				background-color:#CCCCCC;
+				width:278px;
+			}
+			ol
+			{
+				list-style-type: decimal;
+			}
+			li
+			{
+				margin: 3px 3px 3px 3px;
+				padding: 2px 2px 2px 2px;
+				background-color:#EEEEEE;
+				overflow:hidden;
+			}
+			#spielerliste>li, #rollenliste>li, #auswahlanzeige>li
+			{
+				line-height:36px;
+				min-height:36px;
+			}
+			#ausgabeeinstellungen
+			{
+				text-align: center;
+			}
+			#ausgabeeinstellungen > p
+			{
+				font-size: 0.8em;
+				text-align: left;
+			}
+			#ausgabeeinstellungen > hr
+			{
+				width:90%;
+				border:1px solid #CCCCCC;
+			}
+			button.blaubutton
+			{
+				font: inherit;
+			    font-weight: bold;
+				text-shadow: -1px -1px  3px #666666;
+				color: #FFFFFF;
+
+				-webkit-border-radius: 15px;
+				-moz-border-radius: 15px;
+				border-radius: 15px;
+				border: 1px solid #CCCCCC;
+				padding: 10px 15px;
+
+				background: rgb(101,175,232);
+				background: -moz-linear-gradient(top, rgba(101,175,232,1) 0%, rgba(49,113,193,1) 100%);
+				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(101,175,232,1)), color-stop(100%,rgba(49,113,193,1)));
+				background: -webkit-linear-gradient(top, rgba(101,175,232,1) 0%,rgba(49,113,193,1) 100%);
+				background: -o-linear-gradient(top, rgba(101,175,232,1) 0%,rgba(49,113,193,1) 100%);
+				background: -ms-linear-gradient(top, rgba(101,175,232,1) 0%,rgba(49,113,193,1) 100%);
+				background: linear-gradient(top, rgba(101,175,232,1) 0%,rgba(49,113,193,1) 100%);
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#65afe8', endColorstr='#3171c1',GradientType=0 );
+			}
+			button.blaubutton:hover, button.blaubutton:focus
+			{
+				text-shadow: -1px -2px  4px #FF0000;
+			}
+			button.menubutton
+			{
+				width:190px;
+				margin: 7px 0px 7px 0px;
+			}
+			button.listenbutton
+			{
+				
+				float:right;
+				height:48px;
+				width:48px;
+				
+				font: inherit;
+				font-weight:bold;
+				font-size:0.8em;
+				text-shadow: 1px -1px  1px #FFFFFF;
+				color:#000;
+
+				-webkit-border-radius: 5px;
+				-moz-border-radius: 5px;
+				border-radius: 5px;
+				border: 1px solid #CCCCCC;
+				padding: 2px 4px 4px 4px;
+
+				background: rgb(188,188,188);
+				background: -moz-linear-gradient(top, rgba(188,188,188,1) 0%, rgba(229,229,229,1) 5%, rgba(179,179,179,1) 58%, rgba(179,179,179,1) 100%);
+				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(188,188,188,1)), color-stop(5%,rgba(229,229,229,1)), color-stop(58%,rgba(179,179,179,1)), color-stop(100%,rgba(179,179,179,1)));
+				background: -webkit-linear-gradient(top, rgba(188,188,188,1) 0%,rgba(229,229,229,1) 5%,rgba(179,179,179,1) 58%,rgba(179,179,179,1) 100%);
+				background: -o-linear-gradient(top, rgba(188,188,188,1) 0%,rgba(229,229,229,1) 5%,rgba(179,179,179,1) 58%,rgba(179,179,179,1) 100%);
+				background: -ms-linear-gradient(top, rgba(188,188,188,1) 0%,rgba(229,229,229,1) 5%,rgba(179,179,179,1) 58%,rgba(179,179,179,1) 100%);
+				background: linear-gradient(top, rgba(188,188,188,1) 0%,rgba(229,229,229,1) 5%,rgba(179,179,179,1) 58%,rgba(179,179,179,1) 100%);
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcbcbc', endColorstr='#b3b3b3',GradientType=0 );
+			}
+			button.menulistenbutton
+			{
+				float:none;
+				height:auto;
+				width:170px;
+				margin-bottom:5px;
+			}
+			button.listenbutton:hover, button.listenbutton:focus
+			{
+				text-shadow: 1px -1px  1px #6495ED;
+				border: 1px solid #6495ED;
+			}
+			button.listenbutton>img
+			{
+				width:40px;
+				height:40px;
+			}
+			#bugbutton
+			{
+				width:250px;
+			}
+			#continuebutton
+			{
+				display:none;
+			}
+			#continuebutton>button
+			{
+				font-variant:small-caps;
+				font-weight:bold;
+				color:#00EE00;
+			}
+			#spielername
+			{
+				font: inherit;
+				width:210px;
+				height:36px;
+			}
+			#rollenselect
+			{
+				width:100%;
+			}
+			#spielerauswahl
+			{
+				width:180px;
+			}
+			.zentriermich
+			{
+				text-align: center;
+			}
+			.jabutton
+			{
+				float:left;
+			}
+			.neinbutton
+			{
+				float:right;
+			}
+			.einstellungsauswahl
+			{
+				padding: 2px 2px 2px 2px;
+				margin: 1px 1px 1px 1px;
+				border-radius: 5px;
+			}
+			.status_boese
+			{
+				border-style:none solid;
+				border-width: 2px;
+				border-color: #C00000;
+			}
+			.status_gut
+			{
+				border-style:none solid;
+				border-width: 2px;
+				border-color: #00BB00;
+			}
+			.status_tot
+			{
+				text-decoration: line-through;
+				background-color: #999999;
+			}
+			span.status_klassentext
+			{
+				float:right;
+				font-size:0.8em;
+				font-variant:small-caps;
+				vertical-align:bottom;
+			}
+			span.status_klassentext:before { content:"("; }
+			span.status_klassentext:after  { content:")"; }
+			q
+			{
+				display:block;
+				quotes: "\00BB" "\00AB" "\203A" "2039";
+				font-style:italic;
+				font-family:times;
+				font-size:1.2em;
+			}
+			q:before
+			{
+				content: open-quote;
+			}
+			q:after
+			{
+				content: close-quote;
+			}
+			#karte
+			{
+				background-color: white;
+				display: inline-block;
+				border: 5px solid black;
+				width: 180px;
+				height: 200px;
+				border-radius:15px;
+				box-shadow: 5px 5px 5px #888;
+				padding: 20px 10px 20px 10px;
+				text-align:center;
+			}
+			#kartenvergabe_spieler
+			{
+				font-size:1.2em;
+			}
+			.kontaktmail {
+				unicode-bidi:bidi-override; direction: rtl;
+				font-style:italic;
+			}
+			</style>
+		<script src=gamelogic.js></script>
+	</head>
+	<body onload="SpielInit();">
+		<h1>TheNailsMörderApp</h1>
+		<noscript><h1 style="color:#C00000;">benötigt Javascript!</h1></noscript>
+		<fieldset id="spiel_hauptmenu" style="display:none;">
+			<h2>Hauptmenü</h2>
+			<div class="zentriermich">
+				<span style="font-size:0.9em;">Willkommen zur Mörder&#8209;Spielleiter&#8209;App!</span>
+				<hr>
+				<div id="continuebutton">
+					<button class="blaubutton menubutton" onclick="Button_Fortsetzen(this);">Weiterspielen</button><br>
+				</div>
+				<button class="blaubutton menubutton" onclick="Anzeige_Menu(['spiel_setup']);">Neues Spiel</button><br>
+				<button class="blaubutton menubutton" onclick="Anzeige_Menu(['spiel_anleitung']);">Anleitung</button>
+				<hr>
+				<button id="bugbutton" class="listenbutton menulistenbutton" onclick="window.open('https://github.com/TheNailDev/moerder-spielleiter/issues','_blank');">Bug melden (GitHub)</button><br>
+			</div>
+		</fieldset>
+		<fieldset id="spiel_setup" style="display:none;">
+			<h2>Spiel-Setup</h2>
+			<form id="vorbereitung_spieler" method="post" action="javascript:void(0);" onsubmit="return false;">
+				<p>
+					Spieler (<span id="spieleranzahl">0</span>):
+				</p>
+				<ul id="spielerliste"></ul>
+			</form>
+			<form id="vorbereitung_rollen" method="post" action="javascript:void(0);" onsubmit="return false;">
+				<p>
+					Rollen (<span id="rollenanzahl">0</span>):
+				</p>
+				<ul id="rollenliste"></ul>
+			</form>
+			<div class="zentriermich">
+				Balance: <span id="balanceanzeige">0</span><br>
+				<button class="blaubutton menubutton" onclick="SpielStart();">Spiel starten</button>
+				<button class="listenbutton menulistenbutton" onclick="Anzeige_Menu(['spiel_einstellungen']);">Einstellungen</button>
+				<button class="listenbutton menulistenbutton" onclick="Anzeige_Menu(['spiel_hauptmenu']);">&#9668; Hauptmenü</button>
+			</div>
+		</fieldset>
+		<fieldset id="spiel_guide" style="display:none;">
+			<h2>Spiel</h2>
+			<div id="ausgabe">
+				<div id="ausgabecontent"></div>
+				<div id="ausgabeinteraktion"></div>
+			</div>
+		</fieldset>
+		<fieldset id="spiel_status" style="display:none;">
+			<h2>Status</h2>
+			<div id="statusausgabe"></div>
+		</fieldset>
+		<fieldset id="spiel_admin" style="display:none;">
+			<h2>Spielleiter</h2>
+			<div id="adminausgabe" style="text-align:center;">
+				<button class="listenbutton menulistenbutton" style="width:250px;" onclick="Button_NachtWiederholen(this);">Spiel zurückspulen</button>
+				<button class="listenbutton menulistenbutton" style="width:250px;" onclick="Button_Neustart(this);">Spiel abbrechen</button>
+			</div>
+		</fieldset>
+		<fieldset id="spiel_anleitung" style="display:none;">
+			<h2>Anleitung</h2>
+				<p style="font-size:0.8em;text-align:left;">
+					Du traust dich, die Spielleiter-Rolle zu übernehmen? Diese App nimmt dich an die Hand und assistiert dir! Ich gehe davon aus, dass du schon zumindest eine Partie gespielt hast, alles andere wissenswerte zum Spiel und zur App folgt jetzt.<br>
+					<b>Vorsicht - Wall of Text!</b>
+				</p>
+				<hr>
+				<h3>Voraussetzungen</h3>
+				<p style="font-size:0.8em;text-align:left;">
+					Damit Werwolf Spa&szlig; machen kann, sollte man mindestens 8 Spieler und 1 Spielleiter haben. Je besser sich die Personen kennen, desto spannender wird das Spiel. Namenskenntnis ist Minimum, Freude an Diskussionen optimal. Alle müssen sich im Klaren darüber sein, dass gelogen und betrogen wird, wo es nur geht... Zur Rollenverteilung werden zusätzlich entweder eine Spieleausgabe oder selbstangefertigte Zettel benötigt. Weiterhin sollte man in gemütlicher Runde am Tisch oder im Kreis sitzen mit genügend Platz, damit du als Spielleiter drumherum laufen kannst.
+				</p>
+				<hr>
+				<h3>Vorbereitung</h3>
+				<p style="font-size:0.8em;text-align:left;">
+					Wähle im Hauptmenü &quot;Neues Spiel&quot; und trage die Namen aller Mitspieler ein. Anschließend füge im unteren Teil gleichviele Rollen hinzu. Denk daran, dass Werwölfe und mindestens genau so viele normale Dorfbewohner der Grundbestandteil des Spieles sind, zuviele andere Rollen bei zu wenigen Dorfbewohnern schaden. Sobald die Balance stimmt, kann es losgehn. In einer professionellen Runde kann man es mit bis zu -7 ruhig etwas schwerer machen, ansonsten sind Werte von -3 bis +3 vollkommen in Ordnung. Nur bei vielen absoluten Neulingen sind positivere Werte empfehlenswert.
+				</p>
+				<hr>
+				<h3>Spiel: Bedienung</h3>
+				<p style="font-size:0.8em;text-align:left;">
+					Das Interface ist während des Spiels dreigeteilt. Im Abschnitt &quot;Spiel&quot; steht der Text, den du als Spielleiter laut verkündest, in Anführungsstrichen. Fette Schrift kennzeichnet Aktionen die du ausführen oder anregen musst. Meist sind diese auch eingeklammert, lies diesen Teil *nicht* vor, sondern handle nur dementsprechend! Wenn die App eine Auswahl fordert, wähle je nach Aktion einen, mehrere oder auch gar keinen Spieler aus und bestätige die Auswahl mit dem &quot;OK&quot;-Button. Im mittleren Abschnitt findest du Spielinfos für dich, diese sind vertraulich! Sie geben dir Übersicht über die Rollen der Spieler, ihre Beziehungen oder ihr Ableben. Weiterhin erfährst du in der wievielten Tag- oder Nachtphase sich das Spiel befindet und wie lange diese bereits dauert.
+				</p>
+				<hr>
+				<h3>Spiel: Sonderfunktionen</h3>
+				<p style="font-size:0.8em;text-align:left;">
+					Der unterste Abschnitt des Interface beinhaltet Sonderfunktionen für den Spielleiter (also dich^^). Die Buttons sollten selbsterklärend sein und fragen bei Klick noch einmal nach, bevor sie sich aktivieren. Am interessantesten ist aber bestimmt der &quot;Zurückspulen&quot;-Knopf: Zu Beginn einer jeden neuen Nacht wird das aktuelle Spiel automatisch gespeichert. Ist dir oder den Spielern ein schwerer Fehler unterlaufen, so kannst du die App auf den Anfang der letzten Nacht zurücksetzen um Eingaben oder Entscheidungen zu korrigieren.
+				</p>
+			<div class="zentriermich">
+				<hr>
+				<button class="listenbutton menulistenbutton" onclick="Anzeige_Menu(['spiel_hauptmenu']);">&#9668; Hauptmenü</button>
+			</div>
+		</fieldset>
+		<fieldset id="spiel_einstellungen" style="display:none;">
+			<h2>Einstellungen</h2>
+			<p style="font-size:0.8em;text-align:left;">
+				Hier in den erweiterten Spieleinstellungen können kleinere Regeldetails festgelegt werden, aber Vorsicht, die Balance wird dadurch unter Umständen stark verändert!
+			</p>
+			<div class="zentriermich"><hr></div>
+			<div id="ausgabeeinstellungen">
+				<p>Loading...</p>
+			</div>
+			<div class="zentriermich">
+				<hr>
+				<button class="listenbutton menulistenbutton" onclick="Anzeige_Menu(['spiel_setup']);">&#9668; Zurück</button>
+			</div>
+		</fieldset>
+		<fieldset id="spiel_rollenvergabe" style="display:none;">
+			<h2>Virtuelle Karten</h2>
+			<div class="zentriermich">
+				<span id="kartenvergabe_spieler">Spieler 0 von 0</span>
+				
+				<div id="karte"></div>
+				<hr>
+				<button class="listenbutton menulistenbutton" onclick="Anzeige_Menu(['spiel_guide']);">&#9668; Zurück</button>
+			</div>
+		</fieldset>
+		<div style="margin-top:-10px;font-size:0.7em;text-align:center;">NMA<span id="vinfo"></span></div>
+	</body>
+</html>
