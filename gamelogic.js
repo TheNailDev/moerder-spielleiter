@@ -1,6 +1,6 @@
 /* Variablen- und Grundsetup */
-var version = "V1.2-20230325-RC13";
-var speicherversion = 1;
+var version = "v1.0.0-20240325";
+var speicherversion = 2;
 var speicherstand;
 var running = false;
 var schrittuhr_intervall, schrittuhr_sek;
