@@ -238,11 +238,11 @@ function SpielInit()
 	einstellungen = new Object();
 	//NeueEinstellung("dummysetting",true,"Ausführlicher Text");
 
-	NeueEinstellung("hexe_eigenschutz",false,"Hexe darf sich selbst schützen");
+	NeueEinstellung("hexe_eigenschutz",true,"Hexe darf sich selbst schützen");
 	NeueEinstellung("amor_eigenwahl",true,"Amor darf sich selbst verkuppeln");
 	NeueEinstellung("leibwaechter_eigenwahl",true,"Nachtwächter / Priester darf sich selbst schützen");
-	NeueEinstellung("rolle_verliebt_bekanntgeben",true,"Beim Suizid aus Liebe wird bei Tag die Rolle bekanntgegeben");
-	NeueEinstellung("rolle_lynchen_bekanntgeben",true,"Beim Lynchen wird die Rolle des Verstorbenen bekanntgegeben");
+	NeueEinstellung("rolle_verliebt_bekanntgeben",false,"Beim Suizid aus Liebe wird bei Tag die Rolle bekanntgegeben");
+	NeueEinstellung("rolle_lynchen_bekanntgeben",false,"Beim Lynchen wird die Rolle des Verstorbenen bekanntgegeben");
 	NeueEinstellung("rollen_anzahlen_bekannt",true,"Anzahlen der Spieler pro Rolle bekannt");
 	NeueEinstellung("rolle_tot_zugeben",false,"Zugeben, sobald eine Rolle ausgelöscht worden ist (nicht empfohlen)");
 
