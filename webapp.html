@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html manifest="werwolf.appcache" lang="de">
-	<!--@ Nikos Werwolf-Spielleiter-Web-App auf http://n2code.github.io/werwolf -->
+	<!--@ TheNails Mörder-Spielleiter-App basierend auf Nikos Werwolf-Spielleiter-Web-App -->
 	<head>
 		<meta name="HandheldFriendly" content="true"/>
 	    <meta name="MobileOptimized" content="320"/>
 		<meta name="viewport" content="width=320,initial-scale=1.0,target-densityDpi=145"/>
 		<meta name="apple-mobile-web-app-capable" content="yes"/>
 		<meta charset="utf-8"/>
-		<title>Werwolf-Spielleiter-Web-App</title>
+		<title>Mörder-Spielleiter-App</title>
 		<style>
 			/* CSS-Reset */
 			html, body, div, span, applet, object, iframe,
@@ -349,12 +349,12 @@
 		<script src=gamelogic.js></script>
 	</head>
 	<body onload="SpielInit();">
-		<h1>NikosWerwolfWebApp</h1>
+		<h1>TheNailsMörderApp</h1>
 		<noscript><h1 style="color:#C00000;">benötigt Javascript!</h1></noscript>
 		<fieldset id="spiel_hauptmenu" style="display:none;">
 			<h2>Hauptmenü</h2>
 			<div class="zentriermich">
-				<span style="font-size:0.9em;">Willkommen zur Werwolf&#8209;Spielleiter&#8209;Web&#8209;App!</span>
+				<span style="font-size:0.9em;">Willkommen zur Mörder&#8209;Spielleiter&#8209;App!</span>
 				<hr>
 				<div id="continuebutton">
 					<button class="blaubutton menubutton" onclick="Button_Fortsetzen(this);">Weiterspielen</button><br>
@@ -362,8 +362,7 @@
 				<button class="blaubutton menubutton" onclick="Anzeige_Menu(['spiel_setup']);">Neues Spiel</button><br>
 				<button class="blaubutton menubutton" onclick="Anzeige_Menu(['spiel_anleitung']);">Anleitung</button>
 				<hr>
-				<button id="bugbutton" class="listenbutton menulistenbutton" onclick="window.open('https://github.com/n2code/werwolf/issues','_blank');">Bug melden (github)</button><br>
-				<span style="font-size:0.9em;">Sonstiges Feedback oder anonyme Bugreports bitte an <br><span class="kontaktmail">ed.enilno2n@flowrew</span></span>
+				<button id="bugbutton" class="listenbutton menulistenbutton" onclick="window.open('https://github.com/TheNailDev/moerder-spielleiter/issues','_blank');">Bug melden (GitHub)</button><br>
 			</div>
 		</fieldset>
 		<fieldset id="spiel_setup" style="display:none;">
@@ -460,6 +459,6 @@
 				<button class="listenbutton menulistenbutton" onclick="Anzeige_Menu(['spiel_guide']);">&#9668; Zurück</button>
 			</div>
 		</fieldset>
-		<div style="margin-top:-10px;font-size:0.7em;text-align:center;">NWWA<span id="vinfo"></span></div>
+		<div style="margin-top:-10px;font-size:0.7em;text-align:center;">NMA<span id="vinfo"></span></div>
 	</body>
 </html>
